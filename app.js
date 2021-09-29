@@ -15,13 +15,18 @@ module.exports = async function (fastify, opts) {
     dotenv: true,
     schema: {
       type: "object",
-      required: ["MONGODB_URI"],
+      required: ["MONGODB_URI", "JWT_SECRET"],
       properties: {
         MONGODB_URI: {
           type: "string",
         },
+        JWT_SECRET: { type: "string" },
       },
     },
+  });
+
+  fastify.register(require("fastify-jwt"), {
+    secret: process.env.JWT_SECRET,
   });
 
   fastify.register(require("fastify-mongodb"), {

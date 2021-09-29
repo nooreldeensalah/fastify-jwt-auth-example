@@ -5,6 +5,15 @@
  * @param {*} opts
  */
 module.exports = async function (fastify, opts) {
+  // Hook to validate Bearer token
+  fastify.addHook("preHandler", async (request, reply) => {
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      reply.send(err);
+    }
+  });
+
   const users = fastify.mongo.db.collection("users");
   users.createIndex({ username: 1 }, { unique: true });
 
