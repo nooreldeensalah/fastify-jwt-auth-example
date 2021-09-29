@@ -16,10 +16,12 @@
   "license": "ISC",
   "dependencies": {
     "fastify": "^3.21.6",
-    "fastify-plugin": "^3.0.0",
     "fastify-autoload": "^3.9.0",
-    "fastify-sensible": "^3.1.1",
-    "fastify-cli": "^2.13.0"
+    "fastify-cli": "^2.13.0",
+    "fastify-env": "^2.1.1",
+    "fastify-mongodb": "^4.1.0",
+    "fastify-plugin": "^3.0.0",
+    "fastify-sensible": "^3.1.1"
   },
   "devDependencies": {
     "tap": "^15.0.10"
