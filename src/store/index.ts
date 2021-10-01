@@ -18,12 +18,12 @@ export default createStore({
   },
   actions: {
     register({ commit }, userCredentials) {
-      axios
+      return axios
         .post("http://localhost:3000/signup", userCredentials)
         .then((response) => commit("saveToken", response.data.token));
     },
     login({ commit }, userCredentials) {
-      axios
+      return axios
         .post("http://localhost:3000/login", userCredentials)
         .then((response) => commit("saveToken", response.data.token));
     },

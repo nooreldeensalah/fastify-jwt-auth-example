@@ -19,7 +19,7 @@ export default {
     };
   },
   created() {
-    axios
+    return axios
       .get("http://localhost:3000/users")
       .then((response) => {
         this.users = response.data;

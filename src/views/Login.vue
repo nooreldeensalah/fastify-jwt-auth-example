@@ -11,6 +11,9 @@
     </form>
   </div>
   <router-link to="/register"> Don't have an account? Register. </router-link>
+  <div>
+    {{ loginError }}
+  </div>
 </template>
 
 <script>
@@ -19,6 +22,7 @@ export default {
     return {
       username: String(),
       password: String(),
+      loginError: String(),
     };
   },
   methods: {
@@ -28,7 +32,8 @@ export default {
           username: this.username,
           password: this.password,
         })
-        .then(() => this.$router.push({ name: "Home" }));
+        .then(() => this.$router.push({ name: "Home" }))
+        .catch((error) => (this.loginError = error.response.data.message));
     },
   },
 };

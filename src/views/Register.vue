@@ -14,6 +14,9 @@
     </form>
   </div>
   <router-link to="/login"> Already have an account? Login. </router-link>
+  <div>
+    {{ registrationError }}
+  </div>
 </template>
 
 <script>
@@ -23,6 +26,7 @@ export default {
       name: String(),
       username: String(),
       password: String(),
+      registrationError: String(),
     };
   },
   methods: {
@@ -33,7 +37,10 @@ export default {
           username: this.username,
           password: this.password,
         })
-        .then(() => this.$router.push({ name: "Home" }));
+        .then(() => this.$router.push({ name: "Home" }))
+        .catch(
+          (error) => (this.registrationError = error.response.data.message)
+        );
     },
   },
 };
