@@ -6,22 +6,29 @@ export default createStore({
     accessToken: null,
   },
   mutations: {
-    storeToken(state, accessToken) {
+    saveToken(state, accessToken) {
       state.accessToken = accessToken;
       localStorage.setItem("accessToken", accessToken);
       axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    },
+    deleteToken() {
+      localStorage.removeItem("accessToken");
+      location.reload(); // Reloading deletes the access token in both the store and the axios header
     },
   },
   actions: {
     register({ commit }, userCredentials) {
       axios
         .post("http://localhost:3000/signup", userCredentials)
-        .then((response) => commit("storeToken", response.data.token));
+        .then((response) => commit("saveToken", response.data.token));
     },
     login({ commit }, userCredentials) {
       axios
         .post("http://localhost:3000/login", userCredentials)
-        .then((response) => commit("storeToken", response.data.token));
+        .then((response) => commit("saveToken", response.data.token));
+    },
+    logout({ commit }) {
+      commit("deleteToken");
     },
   },
   modules: {},
