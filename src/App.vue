@@ -1,5 +1,6 @@
 <template>
   <navigation-bar />
+  <router-view />
 </template>
 
 <script lang="ts">

@@ -1,9 +1,24 @@
 import { createStore } from "vuex";
-// TODO: Use Vuex Store for storing authentication status.
+import axios from "axios";
+
 export default createStore({
-  state: {},
-  mutations: {},
-  actions: {},
+  state: {
+    accessToken: null,
+  },
+  mutations: {
+    storeToken(state, accessToken) {
+      state.accessToken = accessToken;
+      localStorage.setItem("accessToken", accessToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    },
+  },
+  actions: {
+    register({ commit }, userCredentials) {
+      axios
+        .post("http://localhost:3000/signup", userCredentials)
+        .then((response) => commit("storeToken", response.data.token));
+    },
+  },
   modules: {},
 });
 
