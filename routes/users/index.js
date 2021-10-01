@@ -1,8 +1,15 @@
 "use strict";
+
+const {
+  getAllUsersSchema,
+  getUserSchema,
+  patchUserSchema,
+  deleteUserSchema,
+} = require("../../schemas");
+
 /**
  *
  * @param {import("fastify").FastifyInstance} fastify
- * @param {*} opts
  */
 module.exports = async function (fastify, opts) {
   // Grab users collection from the database
@@ -20,62 +27,98 @@ module.exports = async function (fastify, opts) {
   });
 
   // Get all Users
-  fastify.get("/", async function (request, reply) {
-    const result = await users.find().toArray();
+  fastify.get(
+    "/",
+    { schema: getAllUsersSchema },
+    async function (request, reply) {
+      const result = await users.find().toArray();
 
-    if (result.length === 0) {
-      reply.code(404).send("No documents are found");
-      return;
-    }
-
-    reply.code(200).send(result);
-  });
-
-  // Get single User
-  fastify.get("/:id", async function (request, reply) {
-    const _id = fastify.mongo.ObjectId(request.params.id);
-    const result = await users.findOne({ _id });
-
-    result
-      ? reply.send(result)
-      : reply.code(404).send({ message: "User not found" });
-  });
-
-  // Update user
-  fastify.patch("/:id", async function (request, reply) {
-    const _id = fastify.mongo.ObjectId(request.params.id);
-    const payload = request.body;
-
-    if (!payload || Object.keys(payload).length === 0) {
-      reply
-        .code(400)
-        .send({ message: "Bad request: the request body can't be empty" });
-      return;
-    }
-
-    try {
-      if (payload.password) {
-        payload.passwordHash = await fastify.bcrypt.hash(payload.password);
-        delete payload.password;
+      if (result.length === 0) {
+        reply.code(404).send({ message: "No users are found" });
+        return;
       }
 
-      const result = await users.updateOne({ _id }, { $set: payload });
-      reply.send(result);
-    } catch (error) {
-      throw new Error(error);
+      reply.code(200).send(result);
     }
-  });
+  );
+
+  // Get single User
+  fastify.get(
+    "/:id",
+    { schema: getUserSchema },
+    async function (request, reply) {
+      let _id;
+      try {
+        _id = fastify.mongo.ObjectId(request.params.id);
+      } catch (error) {
+        reply.code(422).send(error);
+        return;
+      }
+
+      const result = await users.findOne({ _id });
+
+      result
+        ? reply.send(result)
+        : reply.code(404).send({ message: "User not found" });
+    }
+  );
+
+  // Update user
+  fastify.patch(
+    "/:id",
+    { schema: patchUserSchema },
+    async function (request, reply) {
+      let _id;
+      try {
+        _id = fastify.mongo.ObjectId(request.params.id);
+      } catch (error) {
+        reply.code(422).send(error);
+        return;
+      }
+
+      const payload = request.body;
+
+      if (!payload || Object.keys(payload).length === 0) {
+        reply
+          .code(400)
+          .send({ message: "Bad request: the request body can't be empty" });
+        return;
+      }
+
+      try {
+        if (payload.password) {
+          payload.passwordHash = await fastify.bcrypt.hash(payload.password);
+          delete payload.password;
+        }
+
+        const result = await users.updateOne({ _id }, { $set: payload });
+        reply.send(result);
+      } catch (error) {
+        throw new Error(error);
+      }
+    }
+  );
 
   // Delete user
-  fastify.delete("/:id", async function (request, reply) {
-    const _id = fastify.mongo.ObjectId(request.params.id);
+  fastify.delete(
+    "/:id",
+    { schema: deleteUserSchema },
+    async function (request, reply) {
+      let _id;
+      try {
+        _id = fastify.mongo.ObjectId(request.params.id);
+      } catch (error) {
+        reply.code(422).send(error);
+        return;
+      }
 
-    if (!_id) {
-      reply.code(400).send({ message: "Bad request: ID is missing" });
-      return;
+      if (!_id) {
+        reply.code(400).send({ message: "Bad request: ID is missing" });
+        return;
+      }
+
+      const result = await users.deleteOne({ _id });
+      reply.send(result);
     }
-
-    const result = await users.deleteOne({ _id });
-    reply.send(result);
-  });
+  );
 };

@@ -6,7 +6,6 @@ const AutoLoad = require("fastify-autoload");
 /**
  *
  * @param {import("fastify").FastifyInstance} fastify
- * @param {*} opts
  */
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
@@ -40,7 +39,15 @@ module.exports = async function (fastify, opts) {
     url: process.env.MONGODB_URI,
   });
 
-  // Do not touch the following lines
+  fastify.register(require("fastify-swagger"), {
+    exposeRoute: true,
+    routePrefix: "/",
+    swagger: {
+      info: {
+        title: "Users API",
+      },
+    },
+  });
 
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
