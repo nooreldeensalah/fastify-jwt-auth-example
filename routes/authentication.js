@@ -17,7 +17,7 @@ module.exports = async function (fastify, opts) {
       return;
     }
 
-    let { username, password } = payload;
+    let { name, username, password } = payload;
 
     let passwordHash = await fastify.bcrypt.hash(password);
 
@@ -28,7 +28,7 @@ module.exports = async function (fastify, opts) {
     }
 
     try {
-      users.insertOne({ username, passwordHash });
+      users.insertOne({ name, username, passwordHash });
       delete payload.password; // Remove the password from the payload that gets signed for the token.
       const token = await fastify.jwt.sign({ payload });
       reply.send({ token });
