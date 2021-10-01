@@ -25,6 +25,10 @@ module.exports = async function (fastify, opts) {
     },
   });
 
+  fastify.register(require("fastify-bcrypt"), {
+    saltWorkFactor: 12,
+  });
+
   fastify.register(require("fastify-cors"));
 
   fastify.register(require("fastify-jwt"), {

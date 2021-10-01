@@ -17,6 +17,7 @@
   "dependencies": {
     "fastify": "^3.21.6",
     "fastify-autoload": "^3.9.0",
+    "fastify-bcrypt": "^0.1.1",
     "fastify-cli": "^2.13.0",
     "fastify-cors": "^6.0.2",
     "fastify-env": "^2.1.1",

@@ -19,6 +19,8 @@ module.exports = async function (fastify, opts) {
 
     let { username, password } = payload;
 
+    let passwordHash = await fastify.bcrypt.hash(password);
+
     let userExists = await users.findOne({ username });
     if (userExists) {
       reply.code(422).send({ message: "Username already exists" });
@@ -26,7 +28,8 @@ module.exports = async function (fastify, opts) {
     }
 
     try {
-      users.insertOne({ username, password });
+      users.insertOne({ username, passwordHash });
+      delete payload.password; // Remove the password from the payload that gets signed for the token.
       const token = await fastify.jwt.sign({ payload });
       reply.send({ token });
     } catch (error) {
@@ -44,11 +47,24 @@ module.exports = async function (fastify, opts) {
     }
 
     let { username, password } = payload;
-    let result = await users.findOne({ username, password });
+    let user = await users.findOne({ username });
+
     // If the user already exists in the database, assign a token, if not, give an error.
-    if (result) {
-      const token = await fastify.jwt.sign(payload);
-      reply.send({ token });
+    if (user) {
+      let passwordMatch = await fastify.bcrypt.compare(
+        password,
+        user.passwordHash
+      );
+
+      if (passwordMatch) {
+        delete payload.password;
+        const token = await fastify.jwt.sign(payload);
+        reply.send({ token });
+      } else {
+        reply
+          .code(401)
+          .send({ message: "Invalid username and password combination" });
+      }
     } else {
       reply
         .code(401)

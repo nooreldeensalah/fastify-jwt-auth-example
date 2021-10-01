@@ -25,6 +25,7 @@ module.exports = async function (fastify, opts) {
 
     if (result.length === 0) {
       reply.code(404).send("No documents are found");
+      return;
     }
 
     reply.code(200).send(result);
