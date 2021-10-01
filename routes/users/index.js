@@ -8,7 +8,7 @@ const {
 } = require("../../schemas");
 
 /**
- *
+ * This line is added to support auto-completion for the fastify instance
  * @param {import("fastify").FastifyInstance} fastify
  */
 module.exports = async function (fastify, opts) {
@@ -111,12 +111,7 @@ module.exports = async function (fastify, opts) {
         reply.code(422).send(error);
         return;
       }
-
-      if (!_id) {
-        reply.code(400).send({ message: "Bad request: ID is missing" });
-        return;
-      }
-
+      
       const result = await users.deleteOne({ _id });
       reply.send(result);
     }

@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "test": "tap \"test/**/*.test.js\"",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js"
   },
@@ -23,11 +19,6 @@
     "fastify-env": "^2.1.1",
     "fastify-jwt": "^3.1.0",
     "fastify-mongodb": "^4.1.0",
-    "fastify-plugin": "^3.0.0",
-    "fastify-sensible": "^3.1.1",
     "fastify-swagger": "^4.12.3"
-  },
-  "devDependencies": {
-    "tap": "^15.0.10"
   }
 }

@@ -183,13 +183,6 @@ const deleteUserSchema = {
     required: ["id"],
   },
   response: {
-    404: {
-      description: "No user exists with this ID",
-      type: "object",
-      properties: {
-        message: { type: "string" },
-      },
-    },
     200: {
       description: "Successfully deleted the user",
       type: "object",

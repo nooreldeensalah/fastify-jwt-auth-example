@@ -3,7 +3,7 @@
 const { loginSchema, signUpSchema } = require("../schemas");
 
 /**
- *
+ * This line is added to support auto-completion for the fastify instance
  * @param {import("fastify").FastifyInstance} fastify
  */
 module.exports = async function (fastify, opts) {
