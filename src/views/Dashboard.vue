@@ -1,11 +1,15 @@
 <template>
-  <h2>Dashboard</h2>
-  <div v-if="!isLoading">
-    <div class="user" v-for="user in users" :key="user.username">
-      {{ user }}
+  <div class="content">
+    <div v-if="!isLoading">
+      <div class="user" v-for="user in users" :key="user.username">
+        {{ user }}
+      </div>
     </div>
+    <h2 v-else-if="!this.$store.state.accessToken">
+      You must be authenticated in order to access the dashboard
+    </h2>
+    <h2 v-else>Loading...</h2>
   </div>
-  <h2 v-else>Loading...</h2>
 </template>
 
 <script>
@@ -29,5 +33,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

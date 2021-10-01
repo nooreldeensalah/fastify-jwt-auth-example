@@ -1,14 +1,14 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/dashboard">Dashboard</router-link> |
-    <router-link
-      v-if="!this.$store.state.accessToken"
-      to="/login"
-      class="button"
-      >Login</router-link
-    >
-    <button v-else @click="logout">Logout</button>
+    <router-link to="/"> Home </router-link>
+
+    <template v-if="this.$store.state.accessToken">
+      <router-link to="/dashboard"> Dashboard </router-link>
+      <button type="button" class="logoutButton" @click="logout">
+        Log out
+      </button>
+    </template>
+    <router-link v-else to="/login" class="button"> Login </router-link>
   </div>
 </template>
 
@@ -24,15 +24,47 @@ export default {
 
 <style scoped>
 #nav {
-  padding: 30px;
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  padding: 0.2em 1em;
+  background: linear-gradient(to right, #16c0b0, #84cf6a);
 }
-
-#nav a {
+.nav-welcome {
+  margin-left: auto;
+  margin-right: 1rem;
+  color: white;
+}
+a {
   font-weight: bold;
   color: #2c3e50;
+  margin: auto 0.8em auto 0.4em;
+  text-decoration: none;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
 }
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.router-link-exact-active {
+  color: white;
+  border-bottom: 2px solid #fff;
+}
+button,
+.button {
+  margin-left: auto;
+  background: white;
+  text-decoration: none;
+  color: #2c3e50;
+}
+button.router-link-active,
+.button.router-link-active {
+  color: #2c3e50;
+}
+.logoutButton {
+  cursor: pointer;
+  font-weight: bold;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+}
+.nav-welcome + button {
+  margin-left: 0;
 }
 </style>

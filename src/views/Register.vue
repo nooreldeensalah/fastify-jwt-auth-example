@@ -1,21 +1,23 @@
 <template>
-  <div>
+  <div class="content">
     <form @submit.prevent="register">
-      <label for="name"> Name: </label>
+      <label for="name"> Name </label>
       <input v-model="name" type="text" name="name" value />
 
-      <label for="username"> Username: </label>
+      <label for="username"> Username </label>
       <input v-model="username" type="text" name="username" value />
 
-      <label for="password"> Password: </label>
+      <label for="password"> Password </label>
       <input v-model="password" type="password" name="password" value />
 
       <button type="submit" name="button">Register</button>
     </form>
-  </div>
-  <router-link to="/login"> Already have an account? Login. </router-link>
-  <div>
-    {{ registrationError }}
+
+    <router-link to="/login"> Already have an account? Login. </router-link>
+
+    <div>
+      <small>{{ registrationError }}</small>
+    </div>
   </div>
 </template>
 
@@ -45,5 +47,3 @@ export default {
   },
 };
 </script>
-
-<style></style>
