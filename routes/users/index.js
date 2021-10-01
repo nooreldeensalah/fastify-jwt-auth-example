@@ -42,15 +42,18 @@ module.exports = async function (fastify, opts) {
 
   // Create user
   fastify.post("/", async function (request, reply) {
-    const { name, username, email } = request.body;
-    if (!username) {
+    const payload = request.body;
+
+    if (!payload.username || !payload.name || !payload.password) {
       reply
         .code(400)
-        .send({ message: "Invalid request: username is a required field" });
+        .send({ message: "Invalid request: no missing fields are allowed" });
       return;
     }
+    const { name, username, password } = payload;
+
     try {
-      const result = await users.insertOne({ name, username, email });
+      const result = await users.insertOne({ name, username, password });
       reply.code(201).send(result);
     } catch (error) {
       reply.code(422).send(error);

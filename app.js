@@ -25,6 +25,8 @@ module.exports = async function (fastify, opts) {
     },
   });
 
+  fastify.register(require("fastify-cors"));
+
   fastify.register(require("fastify-jwt"), {
     secret: process.env.JWT_SECRET,
   });
