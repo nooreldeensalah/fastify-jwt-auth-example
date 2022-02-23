@@ -11,7 +11,14 @@ module.exports = async function (fastify, opts) {
   let users = fastify.mongo.db.collection("users");
 
   // Signup endpoint
-  fastify.post("/signup", { schema: signUpSchema }, async (request, reply) => {
+  fastify.post("/users", { schema: signUpSchema }, async (request, reply) => {
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      let error = new Error(err);
+      error.statusCode = 401;
+      throw error;
+    }
     let payload = request.body;
     let { name, username, password } = payload;
 
