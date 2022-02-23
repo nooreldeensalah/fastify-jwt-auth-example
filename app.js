@@ -10,6 +10,13 @@ const AutoLoad = require("fastify-autoload");
 module.exports = async function (fastify, opts) {
   // Registering the plugins
 
+  fastify.register(require("fastify-sensible"));
+
+  fastify.register(require("fastify-redis"), {
+    port: 6379,
+    host: "localhost",
+  });
+
   fastify.register(require("fastify-env"), {
     dotenv: true,
     schema: {
