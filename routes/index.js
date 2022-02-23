@@ -1,35 +1,91 @@
 "use strict";
 
 const {
+  loginSchema,
+  signUpSchema,
+  deleteUserSchema,
   getAllUsersSchema,
   getUserSchema,
   patchUserSchema,
-  deleteUserSchema,
-} = require("../../schemas");
+} = require("../schemas");
 
 /**
  * This line is added to support auto-completion for the fastify instance
  * @param {import("fastify").FastifyInstance} fastify
  */
 module.exports = async function (fastify, opts) {
-  // Grab users collection from the database
-  const users = fastify.mongo.db.collection("users");
+  // MongoDB Users collection
+  let users = fastify.mongo.db.collection("users");
   // Require the username field to be unique
   users.createIndex({ username: 1 }, { unique: true });
 
-  // Hook to validate Bearer token
-  fastify.addHook("preHandler", async (request, reply) => {
+  // JWT Authentication Hook
+  fastify.decorate("authenticate", async function (request, reply) {
     try {
       await request.jwtVerify();
     } catch (err) {
-      reply.send(err);
+      reply.unauthorized(err.message);
     }
   });
 
+  // Signup endpoint
+  fastify.post(
+    "/users",
+    { onRequest: fastify.authenticate, schema: signUpSchema },
+    async (request, reply) => {
+      let { name, username, password } = request.body;
+
+      let passwordHash = await fastify.bcrypt.hash(password);
+
+      let userExists = await users.findOne({ username });
+      if (userExists) {
+        reply.unprocessableEntity("Username already exists");
+        return;
+      }
+
+      try {
+        users.insertOne({ name, username, passwordHash });
+        const token = await fastify.jwt.sign({ name, username });
+        reply.code(201).send({ token });
+      } catch (error) {
+        reply.unprocessableEntity(error.message);
+      }
+    }
+  );
+
+  // Login endpoint
+  fastify.post(
+    "/users/authenticate",
+    { schema: loginSchema },
+    async (request, reply) => {
+      const { username, password } = request.body;
+
+      let user = await users.findOne({ username });
+      // If the user already exists in the database, assign a token, if not, give an error.
+
+      if (user === null) {
+        reply.notFound("User not found");
+        return;
+      }
+
+      let passwordMatch = await fastify.bcrypt.compare(
+        password,
+        user.passwordHash
+      );
+
+      if (passwordMatch) {
+        const token = await fastify.jwt.sign({ username });
+        reply.send({ token });
+      } else {
+        reply.badRequest("Invalid username and password combination");
+      }
+    }
+  );
+
   // Get all Users
   fastify.get(
-    "/",
-    { schema: getAllUsersSchema },
+    "/users",
+    { onRequest: fastify.authenticate, schema: getAllUsersSchema },
     async function (request, reply) {
       const result = await users.find().toArray();
 
@@ -44,8 +100,8 @@ module.exports = async function (fastify, opts) {
 
   // Get single User
   fastify.get(
-    "/:id",
-    { schema: getUserSchema },
+    "/users/:id",
+    { onRequest: fastify.authenticate, schema: getUserSchema },
     async function (request, reply) {
       let _id;
       try {
@@ -65,8 +121,8 @@ module.exports = async function (fastify, opts) {
 
   // Update user
   fastify.patch(
-    "/:id",
-    { schema: patchUserSchema },
+    "/users/:id",
+    { onRequest: fastify.authenticate, schema: patchUserSchema },
     async function (request, reply) {
       let _id;
       try {
@@ -101,8 +157,8 @@ module.exports = async function (fastify, opts) {
 
   // Delete user
   fastify.delete(
-    "/:id",
-    { schema: deleteUserSchema },
+    "/users/:id",
+    { onRequest: fastify.authenticate, schema: deleteUserSchema },
     async function (request, reply) {
       let _id;
       try {
@@ -111,7 +167,7 @@ module.exports = async function (fastify, opts) {
         reply.code(422).send(error);
         return;
       }
-      
+
       const result = await users.deleteOne({ _id });
       reply.send(result);
     }
