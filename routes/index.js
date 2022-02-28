@@ -22,7 +22,7 @@ module.exports = async function (fastify, opts) {
   // JWT Authentication Hook
   fastify.decorate("authenticate", async function (request, reply) {
     try {
-      await request.jwtVerify();
+      await request.accessJwtVerify();
     } catch (err) {
       reply.unauthorized(err.message);
     }
@@ -45,7 +45,7 @@ module.exports = async function (fastify, opts) {
 
       try {
         users.insertOne({ name, username, passwordHash });
-        const token = await fastify.jwt.sign({ name, username });
+        const token = fastify.jwt.access.sign({ name, username });
         reply.code(201).send({ token });
       } catch (error) {
         reply.unprocessableEntity(error.message);
@@ -74,7 +74,8 @@ module.exports = async function (fastify, opts) {
       );
 
       if (passwordMatch) {
-        const token = await fastify.jwt.sign({ username });
+        const token = fastify.jwt.access.sign({ username }, { expiresIn: "5h" });
+        console.log(fastify.jwt.access.decode(token));
         reply.send({ token });
       } else {
         reply.badRequest("Invalid username and password combination");
