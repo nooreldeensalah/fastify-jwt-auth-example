@@ -1,4 +1,5 @@
 const signUpSchema = {
+  tags: ["Authentication"],
   description: "User registration endpoint",
   body: {
     type: "object",
@@ -28,6 +29,7 @@ const signUpSchema = {
 };
 
 const loginSchema = {
+  tags: ["Authentication"],
   description: "User login endpoint",
   body: {
     type: "object",
@@ -58,6 +60,7 @@ const loginSchema = {
 };
 
 const getAllUsersSchema = {
+  tags: ["Authentication"],
   description: "Get all users from the database",
   response: {
     200: {
@@ -87,6 +90,7 @@ const getAllUsersSchema = {
 };
 
 const getUserSchema = {
+  tags: ["Authentication"],
   description: "Get a user from the database by ID",
   params: {
     type: "object",
@@ -126,6 +130,7 @@ const getUserSchema = {
 };
 
 const patchUserSchema = {
+  tags: ["Authentication"],
   description: "Update an existing user data",
   params: {
     type: "object",
@@ -174,6 +179,7 @@ const patchUserSchema = {
 };
 
 const deleteUserSchema = {
+  tags: ["Authentication"],
   description: "Delete a user from the database",
   params: {
     type: "object",
