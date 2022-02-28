@@ -8,15 +8,14 @@ const AutoLoad = require("fastify-autoload");
  * @param {import("fastify").FastifyInstance} fastify
  */
 module.exports = async function (fastify, opts) {
+  // For more details on how to use `fastify-autoload` plugin, refer to the docs https://github.com/fastify/fastify-autoload
   // This loads all plugins defined in the `plugins` directory
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, "plugins"),
-    options: Object.assign({}, opts),
   });
 
   // This loads all plugins defined in the `routes` directory
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, "routes"),
-    options: Object.assign({}, opts),
   });
 };
