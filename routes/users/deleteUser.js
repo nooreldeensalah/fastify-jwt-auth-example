@@ -10,7 +10,11 @@ module.exports = async function (fastify, opts) {
   // Delete user
   fastify.delete(
     "/:id",
-    { onRequest: fastify.authenticate, schema: deleteUserSchema },
+    {
+      onRequest: fastify.auth.protectRoute,
+      schema: deleteUserSchema,
+      preSerialization: fastify.auth.checkForRefreshedTokens,
+    },
     async function (request, reply) {
       let _id;
       try {

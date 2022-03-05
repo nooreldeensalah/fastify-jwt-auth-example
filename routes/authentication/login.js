@@ -12,7 +12,7 @@ module.exports = async function (fastify, opts) {
   fastify.post(
     "/users/authenticate",
     { schema: loginSchema },
-    async (request, reply) => {
+    async function (request, reply) {
       const { username, password } = request.body;
 
       let user = await users.findOne({ username });
@@ -28,13 +28,10 @@ module.exports = async function (fastify, opts) {
         user.passwordHash
       );
 
+
       if (passwordMatch) {
-        const token = fastify.jwt.access.sign(
-          { username },
-          { expiresIn: "5h" }
-        );
-        console.log(fastify.jwt.access.decode(token));
-        reply.send({ token });
+        const tokens = await fastify.auth.signTokens(user);
+        reply.code(201).send(tokens);
       } else {
         reply.badRequest("Invalid username and password combination");
       }

@@ -10,7 +10,11 @@ module.exports = async function (fastify, opts) {
 
   fastify.get(
     "/:id",
-    { onRequest: fastify.authenticate, schema: getUserSchema },
+    {
+      onRequest: fastify.auth.protectRoute,
+      // schema: getUserSchema,
+      preSerialization: fastify.auth.checkForRefreshedTokens,
+    },
     async function (request, reply) {
       let _id;
       try {

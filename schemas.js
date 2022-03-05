@@ -15,7 +15,8 @@ const signUpSchema = {
       description: "Successful sign-up",
       type: "object",
       properties: {
-        token: { type: "string" },
+        accessToken: { type: "string" },
+        refreshToken: { type: "string" },
       },
     },
     422: {
@@ -44,7 +45,8 @@ const loginSchema = {
       description: "Successful sign-in",
       type: "object",
       properties: {
-        token: { type: "string" },
+        accessToken: { type: "string" },
+        refreshToken: { type: "string" },
       },
     },
     401: {
@@ -66,15 +68,31 @@ const getAllUsersSchema = {
     200: {
       description:
         "Successfully retrieved some pre-existing users from the database",
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          _id: { type: "string" },
-          name: { type: "string" },
-          username: { type: "string" },
-          passwordHash: {
-            type: "string",
+      type: "object",
+      properties: {
+        result: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              _id: { type: "string" },
+              name: { type: "string" },
+              username: { type: "string" },
+              passwordHash: {
+                type: "string",
+              },
+            },
+          },
+        },
+        tokens: {
+          type: "object",
+          properties: {
+            accessToken: {
+              type: "string",
+            },
+            refreshToken: {
+              type: "string",
+            },
           },
         },
       },
@@ -207,6 +225,8 @@ const deleteUserSchema = {
   },
 };
 
+const logOutSchema = {};
+
 module.exports = {
   signUpSchema,
   loginSchema,
@@ -214,4 +234,5 @@ module.exports = {
   getUserSchema,
   patchUserSchema,
   deleteUserSchema,
+  logOutSchema,
 };

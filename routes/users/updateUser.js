@@ -11,7 +11,11 @@ module.exports = async function (fastify, opts) {
 
   fastify.patch(
     "/:id",
-    { onRequest: fastify.authenticate, schema: patchUserSchema },
+    {
+      onRequest: fastify.auth.protectRoute,
+      // schema: patchUserSchema,
+      preSerialization: fastify.auth.checkForRefreshedTokens,
+    },
     async function (request, reply) {
       let _id;
       try {

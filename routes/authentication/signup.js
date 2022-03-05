@@ -10,8 +10,12 @@ module.exports = async function (fastify, opts) {
 
   fastify.post(
     "/users",
-    { onRequest: fastify.authenticate, schema: signUpSchema },
-    async (request, reply) => {
+    {
+      onRequest: fastify.auth.protectRoute,
+      // schema: signUpSchema,
+      preSerialization: fastify.auth.checkForRefreshedTokens,
+    },
+    async function (request, reply) {
       let { name, username, password } = request.body;
 
       let passwordHash = await fastify.bcrypt.hash(password);
@@ -24,8 +28,10 @@ module.exports = async function (fastify, opts) {
 
       try {
         users.insertOne({ name, username, passwordHash });
-        const token = fastify.jwt.access.sign({ name, username });
-        reply.code(201).send({ token });
+
+        const accessToken = await reply.accessJwtSign({ name, username });
+        const refreshToken = await reply.refreshJwtSign({ name, username });
+        reply.code(201).send({ accessToken, refreshToken });
       } catch (error) {
         reply.unprocessableEntity(error.message);
       }

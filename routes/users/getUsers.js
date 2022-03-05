@@ -11,7 +11,11 @@ module.exports = async function (fastify, opts) {
 
   fastify.get(
     "",
-    { onRequest: fastify.authenticate, schema: getAllUsersSchema },
+    {
+      onRequest: fastify.auth.protectRoute,
+      schema: getAllUsersSchema,
+      preSerialization: fastify.auth.checkForRefreshedTokens,
+    },
     async function (request, reply) {
       const result = await users.find().toArray();
 
@@ -20,7 +24,7 @@ module.exports = async function (fastify, opts) {
         return;
       }
 
-      reply.code(200).send(result);
+      reply.code(200).send({ result });
     }
   );
 };

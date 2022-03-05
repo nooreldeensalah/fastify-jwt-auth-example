@@ -1,10 +1,9 @@
-const { readFileSync } = require("fs");
+const { readFile } = require("fs").promises;
 const fp = require("fastify-plugin");
 
 module.exports = fp(async function (fastify, opts) {
   // For more details on how to use the plugin, please refer to https://github.com/fastify/fastify-jwt
 
-  // QUESTION: What does `generateToken` do in the frontend?
 
   // We can add token blacklisting feature using the `trusted` option https://github.com/fastify/fastify-jwt#trusted
   // We can format the `request.user` object using the `formatUser` option https://github.com/fastify/fastify-jwt#formatuser
@@ -19,18 +18,21 @@ module.exports = fp(async function (fastify, opts) {
   // Access tokens jwt handler
   fastify.register(require("fastify-jwt"), {
     secret: {
-      private: readFileSync("./certs/access/private.key", "utf8"),
-      public: readFileSync("./certs/access/public.key", "utf8"),
+      private: await readFile("./certs/access/private.key", "utf8"),
+      public: await readFile("./certs/access/public.key", "utf8"),
     },
     namespace: "access",
+    sign: { expiresIn: "5h" },
   });
 
   // Refresh tokens jwt handler
   fastify.register(require("fastify-jwt"), {
     secret: {
-      private: readFileSync("./certs/refresh/private.key", "utf-8"),
-      public: readFileSync("./certs/refresh/public.key", "utf-8"),
+      private: await readFile("./certs/refresh/private.key", "utf-8"),
+      public: await readFile("./certs/refresh/public.key", "utf-8"),
     },
     namespace: "refresh",
+    sign: { expiresIn: "7d" },
+    verify: { extractToken: (request) => request.headers["refresh-token"] },
   });
 });
